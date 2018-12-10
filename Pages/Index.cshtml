@@ -1,0 +1,122 @@
+﻿@page "/"
+
+<p>
+    When you click a tile, the number will increment. All horizontal and vertical will increment as well.<br/>
+    Clicks: @clicks<br/>
+    Time: @(startTime.HasValue ? DateTime.Now.Subtract(startTime.Value).TotalSeconds : 0) sec
+</p>
+@if (!ended)
+{
+<div class="card-group">
+    <div class="card game-tile" onclick="@(e => ClickTile(0, 0))">
+        <h2 class="card-title text-align-center"> @grid[0, 0]</h2>
+    </div>
+    <div class="card game-tile" onclick="@(e => ClickTile(0, 1))">
+        <h2 class="card-title text-align-center"> @grid[0, 1]</h2>
+    </div>
+
+    <div class="card game-tile" onclick="@(e => ClickTile(0, 2))">
+        <h2 class="card-title text-align-center"> @grid[0, 2]</h2>
+    </div>
+</div>
+<div class="card-group">
+    <div class="card game-tile" onclick="@(e => ClickTile(1, 0))">
+        <h2 class="card-title text-align-center"> @grid[1, 0]</h2>
+    </div>
+
+    <div class="card game-tile" onclick="@(e => ClickTile(1, 1))">
+        <h2 class="card-title text-align-center"> @grid[1, 1]</h2>
+    </div>
+
+    <div class="card game-tile" onclick="@(e => ClickTile(1, 2))">
+        <h2 class="card-title text-align-center"> @grid[1, 2]</h2>
+    </div>
+</div>
+<div class="card-group">
+    <div class="card game-tile" onclick="@( e => ClickTile(2, 0))">
+        <h2 class="card-title text-align-center"> @grid[2, 0]</h2>
+    </div>
+
+    <div class="card game-tile" onclick="@(e => ClickTile(2, 1))">
+        <h2 class="card-title text-align-center"> @grid[2, 1]</h2>
+    </div>
+
+    <div class="card game-tile" onclick="@(e => ClickTile(2, 2))">
+        <h2 class="card-title text-align-center"> @grid[2, 2]</h2>
+    </div>  
+</div>
+}
+else
+{
+    <div class="jumbotron">
+        <h2 class="text-center">You have won!</h2>
+    </div>
+}
+
+@functions{ 
+    public int clicks = 0;
+    public bool ended = false;
+    public int[,] grid = new int[3, 3];
+    public DateTime? startTime = null;
+
+    protected void ClickTile(int x, int y)
+    {
+        if (!ended)
+        {
+            if (startTime == null)
+            {
+                startTime = DateTime.Now;
+            }
+            clicks++;
+            for (int i = 0; i < 3; i++)
+            {
+                SetTile(x, i);
+                if (x != i)
+                {
+                    SetTile(i, y);
+                }
+            }
+            EndGameCheck();
+        }
+    }
+
+    protected void EndGameCheck()
+    {
+        var checkFor = grid[0, 0];
+        for (var x = 0; x < 3; x++)
+        {
+            for (var y = 0; y < 3; y++)
+            {
+                if (grid[x,y] != checkFor)
+                {
+                    return;
+                }
+            }
+        }
+        ended = true;
+    }
+
+    protected void SetTile(int x, int y)
+    {
+        grid[x, y] += 1;
+        if (grid[x, y] > 3)
+        {
+            grid[x, y] = 1;
+        }
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        var rand = new Random(System.Environment.TickCount);
+        grid[0, 0] = rand.Next(1, 4);
+        grid[0, 1] = rand.Next(1, 4);
+        grid[0, 2] = rand.Next(1, 4);
+        grid[1, 0] = rand.Next(1, 4);
+        grid[1, 1] = rand.Next(1, 4);
+        grid[1, 2] = rand.Next(1, 4);
+        grid[2, 0] = rand.Next(1, 4);
+        grid[2, 1] = rand.Next(1, 4);
+        grid[2, 2] = rand.Next(1, 4);
+
+    }
+}
