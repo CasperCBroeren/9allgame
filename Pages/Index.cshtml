@@ -1,9 +1,8 @@
-﻿@page "/"
-
+﻿@page "/" 
 <p>
-    When you click a tile, the number will increment. All horizontal and vertical will increment as well.<br/>
+    When you click a tile, the number will increment. All horizontal and vertical tiles will increment as well. Try to get all tiles to the same number<br/>
     Clicks: @clicks<br/>
-    Time: @(startTime.HasValue ? DateTime.Now.Subtract(startTime.Value).TotalSeconds : 0) sec
+    Time: <span id="timerElement"></span>
 </p>
 @if (!ended)
 {
@@ -66,6 +65,8 @@ else
             if (startTime == null)
             {
                 startTime = DateTime.Now;
+                JSRuntime.Current.InvokeAsync<string>("clientSideFunctions.startTimer");
+
             }
             clicks++;
             for (int i = 0; i < 3; i++)
@@ -93,6 +94,7 @@ else
                 }
             }
         }
+        JSRuntime.Current.InvokeAsync<string>("clientSideFunctions.stopTimer");
         ended = true;
     }
 
